@@ -1,0 +1,31 @@
+module clock_divider #(
+    parameter clk_freq = 10_000_000,
+    parameter target_freq = 200
+)(
+    input  logic clk,
+    input  logic rst,
+    output logic sample_tick
+);
+
+localparam integer DIV_COUNT = clk_freq / target_freq;
+
+logic [$clog2(DIV_COUNT)-1:0] counter;
+
+always_ff @(posedge clk or posedge rst) begin
+    if (rst) begin
+        counter <= 0;
+        sample_tick <= 0;
+    end
+    else begin
+        if (counter == DIV_COUNT-1) begin
+            counter <= 0;
+            sample_tick <= 1;
+        end
+        else begin
+            counter <= counter + 1;
+            sample_tick <= 0;
+        end
+    end
+end
+
+endmodule
