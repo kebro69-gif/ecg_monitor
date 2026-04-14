@@ -1,0 +1,27 @@
+module adc_interface (
+    input  logic clk,
+    input  logic rst,
+    input  logic [11:0] adc_data_in,
+    input  logic adc_valid,
+    output logic [11:0] adc_data,
+    output logic sample_ready
+);
+
+always_ff @(posedge clk or posedge rst) begin
+    if (rst) begin
+        adc_data <= 0;
+        sample_ready <= 0;
+    end else begin
+        if (adc_valid) begin
+            adc_data <= adc_data_in;
+            sample_ready <= 1;
+        end else begin
+            sample_ready <= 0;
+        end
+    end
+end
+
+endmodule
+
+
+
