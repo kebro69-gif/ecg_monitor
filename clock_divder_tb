@@ -1,0 +1,50 @@
+
+`timescale 1ns/1ps
+
+module clock_divider_tb;
+
+logic clk;
+logic rst;
+logic sample_tick;
+
+// Dump waveforms for GTKWave or similar viewers
+initial begin
+    $dumpfile("simv_out/novas.fsdb");   // waveform file
+    $dumpvars(0, clock_divider_tb);      // dump all signals
+end
+
+// DUT
+clock_divider #(
+    .clk_freq(1000),
+    .target_freq(10)
+) dut (
+    .clk(clk),
+    .rst(rst),
+    .sample_tick(sample_tick)
+);
+
+// Clock generation (10ns period = 100 MHz)
+initial clk = 0;
+always #5 clk = ~clk;
+
+// Test sequence
+initial begin
+    $display("Starting Clock Divider Testbench");
+
+    rst = 1;
+    #20;
+    rst = 0;
+
+    #2000;
+
+    $display("Testbench Finished");
+    $finish;
+end
+
+// Monitor signals
+initial begin
+    $monitor("Time=%0t | clk=%b rst=%b sample_tick=%b",
+              $time, clk, rst, sample_tick);
+end
+
+endmodule
