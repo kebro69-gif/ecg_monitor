@@ -1,0 +1,29 @@
+module heart_rate_calc #(
+    parameter CLK_FREQ = 1000
+)(
+    input  logic clk,
+    input  logic rst,
+    input  logic r_peak,
+    output logic [7:0] heart_rate
+);
+
+logic [31:0] counter;
+logic [31:0] last_interval;
+
+always_ff @(posedge clk or posedge rst) begin
+    if (rst) begin
+        counter <= 0;
+        heart_rate <= 0;
+    end else begin
+        counter <= counter + 1;
+
+        if (r_peak) begin
+            last_interval <= counter;
+            counter <= 0;
+
+            if (last_interval != 0)
+                heart_rate <= (60 * CLK_FREQ) / last_interval;
+        end
+    end
+end
+endmodule
